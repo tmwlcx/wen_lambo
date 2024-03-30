@@ -13,3 +13,5 @@ To Do
   - [x] Use case model
   - [x] Test plan
   - [x] Example program specification
+- [ ] Attempt to write objective function for optimization program.
+- [ ] Create demo optimization code (probably in Python).
