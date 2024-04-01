@@ -69,6 +69,9 @@
 | UpdatedByUserId        | [FK] References User.UserId |
 </br>
 
+> I think we can wait on doing authorization for v1 so the User table and all it's FKs in other tables can wait for v2
+
+
 | **User**            |                      |
 |---------------------|----------------------|
 | UserId              | [PK]                 |
