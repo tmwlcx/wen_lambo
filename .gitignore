@@ -1,1 +1,50 @@
 **/.DS_Store
+
+# Visual Studio temporary files
+.vs/
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio files
+*.exe
+*.pdb
+*.dll
+*.log
+*.vspscc
+*.vssscc
+.vscode/
+*.ncb
+*.suo
+*.user
+*.bak
+*.cache
+*.csproj.user
+*.pidb
+*.log
+*.sln.docstates
+*.sdf
+*.opensdf
+*.pfx
+*.snk
+*.ilk
+*.mdf
+*.ldf
