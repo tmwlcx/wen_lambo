@@ -15,3 +15,6 @@ To Do
   - [x] Example program specification
 - [ ] Attempt to write objective function for optimization program.
 - [ ] Create demo optimization code (probably in Python).
+- [ ] Refine program requirements document
+
+[Here is a neat StackOverflow Blog post](https://stackoverflow.blog/2020/04/06/a-practical-guide-to-writing-technical-specs/) on writing program specs.
