@@ -18,3 +18,5 @@ To Do
 - [ ] Refine program requirements document
 
 [Here is a neat StackOverflow Blog post](https://stackoverflow.blog/2020/04/06/a-practical-guide-to-writing-technical-specs/) on writing program specs.
+
+[This is a good blog post](https://www.altexsoft.com/blog/schedule-optimization/) describing different approaches to solving schedule optimization problems. 
