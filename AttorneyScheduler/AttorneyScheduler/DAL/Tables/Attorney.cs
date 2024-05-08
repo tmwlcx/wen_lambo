@@ -10,6 +10,6 @@
         public DateTime UpdatedDate { get; set; }
 
         public AttorneyType AttorneyType { get; set; }
-        public ICollection<AttorneyTimeOff> AttorneyTimeOff { get; set; }
+        public virtual ICollection<AttorneyTimeOff>? AttorneyTimeOff { get; set; }
     }
 }

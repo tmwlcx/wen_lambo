@@ -50,14 +50,19 @@ namespace AttorneyScheduler.DAL
                 .Property(b => b.UpdatedDate)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+
+
             modelBuilder.Entity<AttorneyTimeOff>()
                 .HasKey(t => t.AttorneyTimeOffId);
 
             modelBuilder.Entity<AttorneyTimeOff>()
                 .HasOne(a => a.Attorney)
-                .WithMany(t => t.AttorneyTimeOff)
-                .HasForeignKey(t => t.AttoneryId);
+                .WithMany(attorney => attorney.AttorneyTimeOff)
+                .HasForeignKey(a => a.AttorneyId)
+                .IsRequired();
+
         }
+
     }
 
 }

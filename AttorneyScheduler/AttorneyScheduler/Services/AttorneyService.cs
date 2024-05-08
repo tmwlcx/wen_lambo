@@ -39,5 +39,46 @@ namespace AttorneyScheduler.Services
         {
             return await _context.AttorneyType.ToListAsync();
         }
+
+        public async Task<AttorneyTimeOff?> GetAttorneyTimeOff(int id)
+        {
+            return await _context.AttorneyTimeOff.FindAsync(id);
+        }
+
+        public async Task<AttorneyTimeOff> CreateAttorneyTimeOff(int attorneyId, DateTime timeOffDateFrom, DateTime timeOffDateTo)
+        {
+            var attorneyTimeOff = new AttorneyTimeOff
+            {
+                AttorneyId = attorneyId,
+                TimeOffDateFrom = timeOffDateFrom,
+                TimeOffDateTo = timeOffDateTo,
+                IsDeleted = false,
+                CreatedDate = DateTime.UtcNow,
+                UpdatedDate = DateTime.UtcNow
+            };
+
+            _context.Add(attorneyTimeOff);
+            await _context.SaveChangesAsync();
+
+            return attorneyTimeOff;
+        }
+
+        public async Task<AttorneyTimeOff?> UpdateAttorneyTimeOff(int id, AttorneyTimeOff attorneyTimeOff)
+        {
+            if (!AttorneyTimeOffExists(id))
+            {
+                return null;
+            }
+
+            attorneyTimeOff.AttorneyTimeOffId = id;
+            await _context.SaveChangesAsync();
+            return attorneyTimeOff;
+        }
+
+        private bool AttorneyTimeOffExists(int id)
+        {
+            return _context.AttorneyTimeOff.Any(e => e.AttorneyTimeOffId == id);
+        }
     }
 }
+
