@@ -1,32 +1,38 @@
 ﻿using AttorneyScheduler.DAL;
 using AttorneyScheduler.DAL.Tables;
+using AttorneyScheduler.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace AttorneyScheduler.Controllers
 {
 
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
-    public class AttorneyController : ControllerBase
+    public class AttorneyController : BaseController
     {
-        private readonly AttorneySchedulerDbContext _context;
+        private readonly IAttorneyService attorneyService;
 
-        public AttorneyController(AttorneySchedulerDbContext context)
+        public AttorneyController(IAttorneyService attorneyService, AttorneySchedulerDbContext context) : base(context)
         {
-            _context = context;
+            this.attorneyService = attorneyService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Attorney>>> GetAttorneys()
         {
-            return await _context.Attorney.ToListAsync();
+            var attorneys = await attorneyService.GetAttorneys();
+            if (attorneys == null) 
+            { 
+                return NotFound(); 
+            }
+            return Ok(attorneys);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Attorney>> GetAttorney(int id)
         {
-            var attorney = await _context.Attorney.FindAsync(id);
+            var attorney = await attorneyService.GetAttorney(id);
 
             if (attorney == null)
             {
@@ -39,16 +45,23 @@ namespace AttorneyScheduler.Controllers
         [HttpPost]
         public async Task<ActionResult<Attorney>> PostAttorney(Attorney attorney)
         {
-            _context.Attorney.Add(attorney);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetAttorney", new { id = attorney.AttorneyId }, attorney);
+            var createdAttorney = await attorneyService.CreateAttorney(attorney);
+            if (createdAttorney == null)
+            {
+                return BadRequest();
+            }
+            return CreatedAtAction(nameof(GetAttorney), new { id = attorney.AttorneyId }, attorney);
         }
 
         [HttpGet("AttorneyType")]
         public async Task<ActionResult<IEnumerable<AttorneyType>>> GetAttorneyTypes()
         {
-            return await _context.AttorneyType.ToListAsync();
+            var types = await attorneyService.GetAttorneyTypes();
+            if (types == null)
+            {
+                return NotFound();
+            }
+            return Ok(types);
         }
 
     }

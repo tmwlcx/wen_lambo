@@ -14,6 +14,8 @@ namespace AttorneyScheduler.DAL
         public DbSet<Attorney> Attorney { get; set; }
         public DbSet<AttorneyType> AttorneyType { get; set; }
 
+        public DbSet<AttorneyTimeOff> AttorneyTimeOff { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite("Data Source=DAL\\Data\\AttorneyScheduler.db");
@@ -22,12 +24,23 @@ namespace AttorneyScheduler.DAL
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Attorney>()
+                .HasKey(b => b.AttorneyId);
+
+            modelBuilder.Entity<Attorney>()
+                .HasOne(b => b.AttorneyType)
+                .WithOne()
+                .HasForeignKey<AttorneyType>(b => b.AttorneyTypeId);
+
+            modelBuilder.Entity<Attorney>()
                 .Property(b => b.CreatedDate)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             modelBuilder.Entity<Attorney>()
                 .Property(b => b.UpdatedDate)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            modelBuilder.Entity<AttorneyType>()
+                .HasKey(t => t.AttorneyTypeId);
 
             modelBuilder.Entity<AttorneyType>()
                 .Property(b => b.CreatedDate)
@@ -37,8 +50,13 @@ namespace AttorneyScheduler.DAL
                 .Property(b => b.UpdatedDate)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            modelBuilder.Entity<Attorney>()
-                .HasIndex(b => b.AttorneyTypeId);
+            modelBuilder.Entity<AttorneyTimeOff>()
+                .HasKey(t => t.AttorneyTimeOffId);
+
+            modelBuilder.Entity<AttorneyTimeOff>()
+                .HasOne(a => a.Attorney)
+                .WithMany(t => t.AttorneyTimeOff)
+                .HasForeignKey(t => t.AttoneryId);
         }
     }
 
