@@ -1,4 +1,5 @@
 ﻿using AttorneyScheduler.DAL;
+using AttorneyScheduler.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
+        services.AddScoped<IAttorneyService, AttorneyService>();
 
         // TODO
         services.AddDbContext<AttorneySchedulerDbContext>(options =>

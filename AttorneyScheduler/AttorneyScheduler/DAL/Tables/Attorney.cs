@@ -8,5 +8,8 @@
         public bool IsDeleted { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
+
+        public AttorneyType AttorneyType { get; set; }
+        public virtual ICollection<AttorneyTimeOff>? AttorneyTimeOff { get; set; }
     }
 }
