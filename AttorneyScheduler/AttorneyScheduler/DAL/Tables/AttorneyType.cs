@@ -4,7 +4,6 @@
     {
         public int AttorneyTypeId { get; set; }
         public string TypeName { get; set; }
-        public bool IsDeleted { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
     }
