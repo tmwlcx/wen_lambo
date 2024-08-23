@@ -46,12 +46,6 @@ namespace AttorneyScheduler.Services
             return result;
         }
 
-
-        public async Task<Attorney> PostAttorney(Attorney attorney)
-        {
-            return new Attorney { };
-        }
-
         public async Task AddUpdateAttorney(AttorneyDto attorney)
         {
 
