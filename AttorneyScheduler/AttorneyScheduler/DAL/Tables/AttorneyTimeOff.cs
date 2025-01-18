@@ -6,7 +6,6 @@
         public int AttorneyId { get; set; }
         public DateTime TimeOffDateFrom { get; set; }
         public DateTime TimeOffDateTo { get; set; }
-        public bool IsDeleted { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
 

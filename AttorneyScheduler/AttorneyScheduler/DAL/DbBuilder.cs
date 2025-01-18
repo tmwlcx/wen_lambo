@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
+using System.IO;
 
 namespace AttorneyScheduler.DAL
 {
@@ -6,29 +7,32 @@ namespace AttorneyScheduler.DAL
     {
         public static void BuildDatabase(string connectionString, string scriptFilePath)
         {
-            var filePath = connectionString.Replace("Data Source=", "");
-            bool preExistingDb;
-            if (!File.Exists(filePath))
-            {
-                preExistingDb = false;
-                File.Create(filePath);
-            }
-            else
-            {
-                preExistingDb = true;
-            }
+            var connectionStringBuilder = new SqliteConnectionStringBuilder(connectionString);
+            var filePath = connectionStringBuilder.DataSource;
 
-            if (preExistingDb == false)
+            bool preExistingDb = File.Exists(filePath);
+
+            if (!preExistingDb)
             {
+                var directoryPath = Path.GetDirectoryName(filePath);
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
+                using (FileStream fs = File.Create(filePath))
+                {
+                    // create the db file
+                }
+
+                // Execute the script to create tables
                 string script = File.ReadAllText(scriptFilePath);
                 ExecuteScript(connectionString, script);
             }
-
         }
 
         private static void ExecuteScript(string connectionString, string script)
         {
-
             using (var connection = new SqliteConnection(connectionString))
             {
                 connection.Open();

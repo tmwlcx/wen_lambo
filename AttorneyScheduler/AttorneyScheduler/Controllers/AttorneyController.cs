@@ -20,7 +20,7 @@ namespace AttorneyScheduler.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Attorney>>> GetAttorneys()
+        public async Task<ActionResult<IEnumerable<AttorneyDto>>> GetAttorneys()
         {
             var attorneys = await attorneyService.GetAttorneys();
             if (attorneys == null) 
@@ -31,7 +31,7 @@ namespace AttorneyScheduler.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Attorney>> GetAttorney(int id)
+        public async Task<ActionResult<AttorneyDto>> GetAttorney(int id)
         {
             var attorney = await attorneyService.GetAttorney(id);
 
@@ -44,14 +44,22 @@ namespace AttorneyScheduler.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Attorney>> PostAttorney(Attorney attorney)
+        public async Task<IActionResult> AddUpdateAttorney(AttorneyDto attorney)
         {
-            var createdAttorney = await attorneyService.CreateAttorney(attorney);
-            if (createdAttorney == null)
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                await attorneyService.AddUpdateAttorney(attorney);
+            }
+            catch (ArgumentException)
             {
                 return BadRequest();
             }
-            return CreatedAtAction(nameof(GetAttorney), new { id = attorney.AttorneyId }, attorney);
+            return Ok();
         }
 
         [HttpGet("AttorneyType")]
@@ -66,7 +74,7 @@ namespace AttorneyScheduler.Controllers
         }
 
         [HttpGet("TimeOff/{id}")]
-        public async Task<ActionResult<AttorneyTimeOff>> GetAttorneyTimeOff(int id)
+        public async Task<ActionResult<AttorneyTimeOffDto>> GetAttorneyTimeOff(int id)
         {
             var timeOff = await attorneyService.GetAttorneyTimeOff(id);
             if (timeOff == null)

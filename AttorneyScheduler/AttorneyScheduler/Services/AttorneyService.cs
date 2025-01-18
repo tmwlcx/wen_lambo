@@ -1,5 +1,6 @@
 ﻿using AttorneyScheduler.DAL;
 using AttorneyScheduler.DAL.Tables;
+using AttorneyScheduler.DTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace AttorneyScheduler.Services
@@ -13,36 +14,91 @@ namespace AttorneyScheduler.Services
             _context = context;
         }
 
-        public async Task <IEnumerable<Attorney>> GetAttorneys()
+        public async Task <IEnumerable<AttorneyDto>> GetAttorneys()
         {
-            return await _context.Attorney.ToListAsync();
+            //return await _context.Attorney.ToListAsync();
+            var results = await _context.Attorney
+                .Include(a => a.AttorneyType)
+                .Select(x => new AttorneyDto
+                {
+                    AttorneyId = x.AttorneyId,
+                    AttorneyName = x.AttorneyName,
+                    AttorneyTypeId = x.AttorneyTypeId,
+                    AttorneyTypeName = x.AttorneyType.TypeName
+                }).ToListAsync();
+
+            return results;
         }
 
-        public async Task<Attorney?> GetAttorney(int id)
+        public async Task<AttorneyDto?> GetAttorney(int id)
         {
-            var attorney = await _context.Attorney.FindAsync(id);
-            if (attorney == null)
+            var result = await _context.Attorney
+                .Include(a => a.AttorneyType)
+                .Where(x => x.AttorneyId == id)
+                .Select(x => new AttorneyDto
+                {
+                    AttorneyId = x.AttorneyId,
+                    AttorneyName = x.AttorneyName,
+                    AttorneyTypeId = x.AttorneyTypeId,
+                    AttorneyTypeName = x.AttorneyType.TypeName
+                }).FirstOrDefaultAsync();
+
+            return result;
+        }
+
+        public async Task AddUpdateAttorney(AttorneyDto attorney)
+        {
+
+            if (attorney.AttorneyId == null)
             {
-                return null;
+                var newAttorney = new Attorney
+                {
+                    AttorneyName = attorney.AttorneyName,
+                    AttorneyTypeId = attorney.AttorneyTypeId
+                };
+
+                _context.Attorney.Add(newAttorney);
+                await _context.SaveChangesAsync();
             }
-            return attorney;
+            else
+            {
+                var updatedAttorney = await _context.Attorney
+                    .FirstOrDefaultAsync(x => x.AttorneyId == attorney.AttorneyId);
+
+                if (updatedAttorney != null)
+                {
+                    updatedAttorney.AttorneyName = attorney.AttorneyName;
+                    updatedAttorney.AttorneyTypeId = attorney.AttorneyTypeId;
+
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    throw new ArgumentException("Invalid AttorneyId");
+                }
+            }
         }
 
-        public async Task<Attorney> CreateAttorney(Attorney attorney)
-        {
-            _context.Add(attorney);
-            await _context.SaveChangesAsync();
-            return attorney;
-        }
 
         public async Task<IEnumerable<AttorneyType>> GetAttorneyTypes()
         {
             return await _context.AttorneyType.ToListAsync();
         }
 
-        public async Task<AttorneyTimeOff?> GetAttorneyTimeOff(int id)
+        public async Task<AttorneyTimeOffDto?> GetAttorneyTimeOff(int id)
         {
-            return await _context.AttorneyTimeOff.FindAsync(id);
+            var result = await _context.AttorneyTimeOff
+                .Where(x => x.AttorneyTimeOffId == id)
+                .Select(x => new AttorneyTimeOffDto
+                {
+                    AttoneryId = x.AttorneyId,
+                    AttorneyName = x.Attorney.AttorneyName,
+                    TimeOffDateFrom = x.TimeOffDateFrom,
+                    TimeOffDateTo = x.TimeOffDateTo
+                })
+                .FirstOrDefaultAsync();
+
+            return result;
         }
 
         public async Task<AttorneyTimeOff> CreateAttorneyTimeOff(int attorneyId, DateTime timeOffDateFrom, DateTime timeOffDateTo)
@@ -52,7 +108,6 @@ namespace AttorneyScheduler.Services
                 AttorneyId = attorneyId,
                 TimeOffDateFrom = timeOffDateFrom,
                 TimeOffDateTo = timeOffDateTo,
-                IsDeleted = false,
                 CreatedDate = DateTime.UtcNow,
                 UpdatedDate = DateTime.UtcNow
             };
