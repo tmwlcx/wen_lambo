@@ -15,3 +15,10 @@ To Do
   - [x] Example program specification
 - [ ] Attempt to write objective function for optimization program.
 - [ ] Create demo optimization code (probably in Python).
+
+
+# Optimization
+To run the optimization file in the `/opt` folder, first load the environment with the following code (you need to have Anaconda installed): 
+```
+conda env create -f environment.yml
+```
