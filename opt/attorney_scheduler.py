@@ -10,7 +10,7 @@ def get_working_days_and_holidays(year, month):
     
     current_date = datetime(year, month, 1)
     while current_date.month == month:
-        if current_date.weekday() < 5:  # Monday to Friday are considered working days
+        if (current_date.weekday() < 5) & (current_date not in us_holidays):  # Monday to Friday are considered working days
             if current_date in us_holidays:
                 holiday_indices.append(len(days))
             days.append(current_date)
@@ -23,7 +23,9 @@ unavailability_data = {
     (2, 10): 1,
     # ... more unavailability data
 }
-attorneys = ["Attorney_1", "Attorney_2", "Attorney_3", ..., "Attorney_10"]
+attorneys = ["Attorney_1", "Attorney_2", "Attorney_3", "Attorney_4",
+             "Attorney_5", "Attorney_6", "Attorney_7", "Attorney_8",
+              "Attorney_9", "Attorney_10"]
 
 junior_attorneys_list = ["Attorney_3", "Attorney_6", "Attorney_8"]
 
@@ -37,7 +39,7 @@ working_days, holiday_indices = get_working_days_and_holidays(year, month)
 model = ConcreteModel()
 
 # Sets
-courtrooms = range(2)
+courtrooms = range(3)
 slots = range(2)
 attorneys = range(10)  # Assuming 10 attorneys
 
