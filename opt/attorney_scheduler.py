@@ -23,11 +23,6 @@ unavailability_data = {
     (2, 10): 1,
     # ... more unavailability data
 }
-attorneys = ["Attorney_1", "Attorney_2", "Attorney_3", "Attorney_4",
-             "Attorney_5", "Attorney_6", "Attorney_7", "Attorney_8",
-              "Attorney_9", "Attorney_10"]
-
-junior_attorneys_list = ["Attorney_3", "Attorney_6", "Attorney_8"]
 
 
 # Example usage
@@ -42,6 +37,13 @@ model = ConcreteModel()
 courtrooms = range(3)
 slots = range(2)
 attorneys = range(10)  # Assuming 10 attorneys
+
+attorneys = ["Jake Paul", "Phyllis Lapin", "Meat Canyon", "Ted Danson",
+             "Earl Bailey", "Stevie Nicks", "Scott Weiland", "Frank Andbeans",
+              "Bean Sabovethafrank", "Mike Rizz"]
+
+junior_attorneys_list = ["Mike Rizz", "Stevie Nicks", "Ted Danson"]
+
 
 model.DAYS = Set(initialize=range(len(working_days)))
 model.COURTROOMS = Set(initialize=courtrooms)
@@ -126,4 +128,4 @@ for i in model.ATTORNEYS:
         for j in model.COURTROOMS:
             for k in model.SLOTS:
                 if model.x[i, j, k, d].value == 1:
-                    print(f"Attorney {attorneys[i]} is scheduled in courtroom {j} at slot {k} on day {working_days[d]}")
+                    print(f"Attorney {i} is scheduled in courtroom {j} at slot {k} on day {working_days[d]}")
