@@ -1,83 +1,3 @@
-Here is the specification for the Attorney Scheduling Optimization Program in plain text:
-
----
-
-## Specification for Attorney Scheduling Optimization Program
-
-### Overview
-The Attorney Scheduling Optimization Program is designed to fairly and efficiently schedule attorneys into courtrooms, considering various constraints such as attorney unavailability, working days, holidays, and the need for junior attorneys to be paired with full attorneys. The program aims to level-load the assignments among non-junior attorneys, ensuring an even distribution of courtroom assignments.
-
-### Inputs
-1. **Attorney List**:
-   - A list of attorney names or indices.
-
-```python
-attorneys = ["Attorney_1", "Attorney_2", "Attorney_3", ..., "Attorney_10"]
-```
-
-2. **Junior Attorneys List**:
-   - A list of indices or names of junior attorneys.
-
-```python
-junior_attorneys_list = ["Attorney_3", "Attorney_6", "Attorney_8"]
-```
-
-3. **Unavailability Data**:
-   - A dictionary indicating the unavailability of each attorney on specific days. The keys are (attorney index, day index) tuples, and the values are 1 if the attorney is unavailable on that day, and 0 otherwise.
-
-```python
-unavailability_data = {
-   (0, 1): 1,
-   (1, 5): 1,
-   (2, 10): 1,
-   # ... more unavailability data
-}
-```
-
-4. **Month and Year**:
-   - The month and year for which the schedule is to be created.
-
-```python
-year = 2025
-month = 1
-```
-
-### Outputs
-The program will generate a schedule indicating which attorney is assigned to each courtroom slot on each working day. The schedule will be printed in a readable format.
-
-### Constraints
-1. **Slot Filling**: Each slot in each courtroom on each day must be filled by exactly one attorney.
-2. **Weekly Limit**: No attorney can be scheduled for more than 3 days in any given week.
-3. **Consecutive Days**: No attorney can be scheduled for 3 consecutive days within the same week.
-4. **Unavailability**: Attorneys must not be scheduled on days when they are unavailable or on holidays.
-5. **Junior Attorney Pairing**: Junior attorneys must be paired with full attorneys in the same courtroom on the same day.
-6. **Level-Loading**: The number of assignments for non-junior attorneys should be evenly distributed.
-
-### Approach
-1. **Define Sets and Parameters**:
-   - Sets for attorneys, days, courtrooms, and slots.
-   - Parameters for attorney unavailability and identifying junior attorneys.
-
-2. **Decision Variables**:
-   - `x[i, j, k, d]`: A binary variable indicating if attorney `i` is scheduled in courtroom `j` at slot `k` on day `d`.
-   - `num_assignments[i]`: An integer variable indicating the number of assignments for attorney `i`.
-
-3. **Constraints**:
-   - Ensure each slot is filled.
-   - Limit the number of assignments per week.
-   - Prevent scheduling for 3 consecutive days.
-   - Respect unavailability and holiday constraints.
-   - Ensure junior attorneys are paired with full attorneys.
-
-4. **Objective**:
-   - Minimize the maximum number of assignments for non-junior attorneys to achieve level-loading.
-
-### Implementation
-The implementation involves using the Pyomo library for defining the optimization model, constraints, and objective function. The GLPK solver is used to solve the optimization problem. The results are then displayed in a readable format.
-
-### Example Code
-
-```python
 from pyomo.environ import *
 from datetime import datetime, timedelta
 import holidays
@@ -96,6 +16,17 @@ def get_working_days_and_holidays(year, month):
             days.append(current_date)
         current_date += timedelta(days=1)
     return days, holiday_indices
+
+unavailability_data = {
+    (0, 1): 1,
+    (1, 5): 1,
+    (2, 10): 1,
+    # ... more unavailability data
+}
+attorneys = ["Attorney_1", "Attorney_2", "Attorney_3", ..., "Attorney_10"]
+
+junior_attorneys_list = ["Attorney_3", "Attorney_6", "Attorney_8"]
+
 
 # Example usage
 year = 2025
@@ -183,4 +114,14 @@ def level_load_constraint_rule(model, i):
     return model.num_assignments[i] <= model.max_assignments
 model.level_load_constraint = Constraint(full_attorneys, rule=level_load_constraint_rule)
 
-#
+# Solving the model
+solver = SolverFactory('glpk')
+solver.solve(model)
+
+# Displaying the results
+for i in model.ATTORNEYS:
+    for d in model.DAYS:
+        for j in model.COURTROOMS:
+            for k in model.SLOTS:
+                if model.x[i, j, k, d].value == 1:
+                    print(f"Attorney {attorneys[i]} is scheduled in courtroom {j} at slot {k} on day {working_days[d]}")
