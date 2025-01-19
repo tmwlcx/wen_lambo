@@ -14,7 +14,7 @@ To Do
   - [x] Test plan
   - [x] Example program specification
 - [ ] Attempt to write objective function for optimization program.
-- [ ] Create demo optimization code (probably in Python).
+- [x] Create demo optimization code (probably in Python).
 
 
 # Optimization
