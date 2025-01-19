@@ -18,6 +18,8 @@ def get_working_days_and_holidays(year, month):
     return days, holiday_indices
 
 unavailability_data = {
+    # structure for tuple list below:
+    # (attorney_number, unavailability_day_of_month): 1=unavailable
     (0, 1): 1,
     (1, 5): 1,
     (2, 10): 1,
@@ -30,6 +32,12 @@ year = 2025
 month = 1
 working_days, holiday_indices = get_working_days_and_holidays(year, month)
 
+attorneys = ["Jake Paul", "Phyllis Lapin", "Meat Canyon", "Ted Danson",
+             "Earl Bailey", "Stevie Nicks", "Scott Weiland", "Frank Andbeans",
+              "Bean Sabovethafrank", "Mike Rizz"]
+
+junior_attorneys_list = ["Mike Rizz", "Stevie Nicks", "Ted Danson"]
+
 # Initialize the model
 model = ConcreteModel()
 
@@ -37,13 +45,6 @@ model = ConcreteModel()
 courtrooms = range(3)
 slots = range(2)
 attorneys = range(10)  # Assuming 10 attorneys
-
-attorneys = ["Jake Paul", "Phyllis Lapin", "Meat Canyon", "Ted Danson",
-             "Earl Bailey", "Stevie Nicks", "Scott Weiland", "Frank Andbeans",
-              "Bean Sabovethafrank", "Mike Rizz"]
-
-junior_attorneys_list = ["Mike Rizz", "Stevie Nicks", "Ted Danson"]
-
 
 model.DAYS = Set(initialize=range(len(working_days)))
 model.COURTROOMS = Set(initialize=courtrooms)
