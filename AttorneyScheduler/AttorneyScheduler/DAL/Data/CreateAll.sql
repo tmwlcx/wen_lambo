@@ -16,7 +16,7 @@ CREATE TABLE AttorneyType (
 );
 
 INSERT INTO AttorneyType(TypeName)
-VALUES('Manager'), ('Attorney');
+VALUES('Manager'), ('Attorney'), ('Junior Attorney');
 
 CREATE TABLE AttorneyTimeOff (
     AttorneyTimeOffId INTEGER PRIMARY KEY,
@@ -40,11 +40,10 @@ VALUES('CourtRoom 1'), ('CourtRoom 2 Judicial Boogaloo');
 
 CREATE TABLE Schedule (
     ScheduleId INTEGER PRIMARY KEY,
-    ScheduleDateFrom DATETIME,
-    ScheduleDateTo DATETIME,
-    CreatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
-    UpdatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(ScheduleDateFrom, ScheduleDateTo)
+    ScheduleYear INTEGER,
+    ScheduleMonth INTEGER,
+    NumSlots INTEGER,
+    CreatedDate DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE ScheduleAssignment (
