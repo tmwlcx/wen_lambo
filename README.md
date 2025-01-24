@@ -19,6 +19,13 @@ To Do
 
 # Optimization
 To run the optimization file in the `/opt` folder, first load the environment with the following code (you need to have Anaconda installed): 
+
+for mac silicon:
 ```
-conda env create -f environment.yml
+conda env create -f osx-arm64.yml
+```
+
+for windows:
+```
+conda env create -f amd64-env.yml
 ```
