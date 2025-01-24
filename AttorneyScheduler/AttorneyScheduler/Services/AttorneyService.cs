@@ -135,6 +135,10 @@ namespace AttorneyScheduler.Services
 
         public async Task<string> GenerateSchedule(int scheduleYear, int scheduleMonth, int numSlots)
         {
+            if (scheduleMonth < 1 || scheduleMonth > 12)
+            {
+                throw new ArgumentOutOfRangeException(nameof(scheduleMonth), "The schedule month must be between 1 and 12.");
+            }
             var pythonSettings = _configuration.GetSection("Python").Get<PythonSettings>();
 
             string condaPath = pythonSettings.ExecutablePath;
@@ -150,8 +154,22 @@ namespace AttorneyScheduler.Services
                 throw new InvalidOperationException($"Script not found at {scriptPath}");
             }
 
+            var attorneyIds = await _context.Attorney
+                .Select(x => x.AttorneyId)
+                .ToListAsync();
+
+            var jrAttorneyIds = await _context.Attorney
+                .Where(x => x.AttorneyTypeId == 3)
+                .Select(x => x.AttorneyId)
+                .ToListAsync();
+
+            string attorneyIdsString = string.Join(",", attorneyIds);
+            string jrAttorneyIdsString = string.Join(",", jrAttorneyIds);
+
+            // TODO: add courtroom
+
             // build the command-line arguments to pass to the Python script
-            string arguments = $"{scheduleYear} {scheduleMonth} {numSlots}";
+            string arguments = $"{scheduleYear} {scheduleMonth} {numSlots} {attorneyIdsString} {jrAttorneyIdsString}";
 
             ProcessStartInfo psi = new ProcessStartInfo
             {

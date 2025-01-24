@@ -33,24 +33,26 @@ unavailability_data = {
 year = int(sys.argv[1])
 month = int(sys.argv[2])
 slots = range(int(sys.argv[3]))
+attorneys = list(map(int, sys.argv[4].split(',')))
+junior_attorneys = list(map(int, sys.argv[5].split(',')))
 
-# year = 2025
-# month = 1
+# JSON response
+schedule = {
+    "Schedule": {
+        "ScheduleYear": year,
+        "ScheduleMonth": month,
+        "NumSlots": len(slots),
+        "ScheduleAssignments": []
+    }
+}
+
 working_days, holiday_indices = get_working_days_and_holidays(year, month)
-
-attorneys = ["Jake Paul", "Phyllis Lapin", "Meat Canyon", "Ted Danson",
-             "Earl Bailey", "Stevie Nicks", "Scott Weiland", "Frank Andbeans",
-              "Bean Sabovethafrank", "Mike Rizz"]
-
-junior_attorneys_list = ["Mike Rizz", "Stevie Nicks", "Ted Danson"]
 
 # Initialize the model
 model = ConcreteModel()
 
 # Sets
-courtrooms = range(3)
-# slots = range(2)
-attorneys = range(10)  # Assuming 10 attorneys
+courtrooms = range(3) # we should make this a input param too once it's setup in BE
 
 model.DAYS = Set(initialize=range(len(working_days)))
 model.COURTROOMS = Set(initialize=courtrooms)
@@ -63,7 +65,7 @@ unavailability = {
     for i in attorneys for d in range(len(working_days))
 }
 is_junior = {
-    i: 1 if i in junior_attorneys_list else 0
+    i: 1 if i in junior_attorneys else 0
     for i in attorneys
 }
 
@@ -129,10 +131,28 @@ model.level_load_constraint = Constraint(full_attorneys, rule=level_load_constra
 solver = SolverFactory('glpk')
 solver.solve(model)
 
+#Debugging
+# print("Attorneys:", attorneys)
+# print("Junior Attorneys:", junior_attorneys)
+# print("Slots:", slots)
+# print("Working Days:", working_days)
+
 # Displaying the results
+has_results = False
 for i in model.ATTORNEYS:
     for d in model.DAYS:
         for j in model.COURTROOMS:
             for k in model.SLOTS:
                 if model.x[i, j, k, d].value == 1:
-                    print(f"Attorney {i} is scheduled in courtroom {j} at slot {k} on day {working_days[d]}")
+                    has_results = True
+                    schedule["Schedule"]["ScheduleAssignments"].append({
+                        "ScheduleDate": str(working_days[d]),
+                        "AttorneyId": i,
+                        "CourtRoomId": j
+                    })
+
+print(json.dumps(schedule, indent=2))
+
+# the strain of the constraints were more than the inputs could bear
+if not has_results:
+    print(json.dumps({"error": "No schedules were generated."}, indent=2))
