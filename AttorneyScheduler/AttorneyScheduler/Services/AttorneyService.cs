@@ -2,19 +2,22 @@
 using AttorneyScheduler.DAL.Tables;
 using AttorneyScheduler.DTO;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace AttorneyScheduler.Services
 {
     public class AttorneyService : IAttorneyService
     {
         private readonly AttorneySchedulerDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public AttorneyService(AttorneySchedulerDbContext context)
+        public AttorneyService(AttorneySchedulerDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
-        public async Task <IEnumerable<AttorneyDto>> GetAttorneys()
+        public async Task<IEnumerable<AttorneyDto>> GetAttorneys()
         {
             //return await _context.Attorney.ToListAsync();
             var results = await _context.Attorney
@@ -128,6 +131,57 @@ namespace AttorneyScheduler.Services
             attorneyTimeOff.AttorneyTimeOffId = id;
             await _context.SaveChangesAsync();
             return attorneyTimeOff;
+        }
+
+        public async Task<string> GenerateSchedule(int scheduleYear, int scheduleMonth, int numSlots)
+        {
+            var pythonSettings = _configuration.GetSection("Python").Get<PythonSettings>();
+
+            string pythonPath = pythonSettings.ExecutablePath;
+            string scriptPath = pythonSettings.ScriptPath;
+
+            if (!File.Exists(pythonPath))
+            {
+                throw new InvalidOperationException($"python.exe not found at {pythonPath}");
+            }
+
+            if (!File.Exists(scriptPath))
+            {
+                throw new InvalidOperationException($"Script not found at {scriptPath}");
+            }
+
+            // build the command-line arguments to pass to the Python script
+            string arguments = $"{scheduleYear} {scheduleMonth} {numSlots}";
+
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = pythonPath,
+                Arguments = $"{scriptPath} {arguments}",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using Process process = Process.Start(psi);
+            if (process == null)
+            {
+                throw new InvalidOperationException("Failed to start the Python process.");
+            }
+
+            // read the output and error streams
+            string output = process.StandardOutput.ReadToEnd();
+            string error = process.StandardError.ReadToEnd();
+
+            process.WaitForExit();
+
+            if (!string.IsNullOrEmpty(error))
+            {
+                throw new InvalidOperationException(error);
+            }
+
+            // just returning the JSON string
+            return output;
         }
 
         private bool AttorneyTimeOffExists(int id)

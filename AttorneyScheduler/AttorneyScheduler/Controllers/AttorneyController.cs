@@ -3,7 +3,6 @@ using AttorneyScheduler.DAL.Tables;
 using AttorneyScheduler.DTO;
 using AttorneyScheduler.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace AttorneyScheduler.Controllers
 {
@@ -23,9 +22,9 @@ namespace AttorneyScheduler.Controllers
         public async Task<ActionResult<IEnumerable<AttorneyDto>>> GetAttorneys()
         {
             var attorneys = await attorneyService.GetAttorneys();
-            if (attorneys == null) 
-            { 
-                return NotFound(); 
+            if (attorneys == null)
+            {
+                return NotFound();
             }
             return Ok(attorneys);
         }
@@ -114,6 +113,19 @@ namespace AttorneyScheduler.Controllers
             return NoContent();
         }
 
-    }
+        [HttpGet("GenerateSchedule")]
+        public async Task<IActionResult> GenerateSchedule(int scheduleYear, int scheduleMonth, int numSlots)
+        {
+            try
+            {
+                var result = await attorneyService.GenerateSchedule(scheduleYear, scheduleMonth, numSlots);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
 
+            }
+        }
+    }
 }

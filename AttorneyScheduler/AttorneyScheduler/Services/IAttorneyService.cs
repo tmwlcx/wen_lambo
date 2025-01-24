@@ -12,5 +12,6 @@ namespace AttorneyScheduler.Services
         Task<AttorneyTimeOffDto?> GetAttorneyTimeOff(int id);
         Task<AttorneyTimeOff> CreateAttorneyTimeOff(int attorneyId, DateTime timeOffDateFrom, DateTime timeOffDateTo);
         Task<AttorneyTimeOff?> UpdateAttorneyTimeOff(int id, AttorneyTimeOff attorneyTimeOff);
+        Task<string> GenerateSchedule(int scheduleYear, int scheduleMonth, int numSlots);
     }
 }
