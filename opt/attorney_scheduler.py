@@ -1,6 +1,8 @@
 from pyomo.environ import *
 from datetime import datetime, timedelta
 import holidays
+import sys
+import json
 
 # Function to get the working days and holidays for a given month and year
 def get_working_days_and_holidays(year, month):
@@ -28,8 +30,12 @@ unavailability_data = {
 
 
 # Example usage
-year = 2025
-month = 1
+year = int(sys.argv[1])
+month = int(sys.argv[2])
+slots = range(int(sys.argv[3]))
+
+# year = 2025
+# month = 1
 working_days, holiday_indices = get_working_days_and_holidays(year, month)
 
 attorneys = ["Jake Paul", "Phyllis Lapin", "Meat Canyon", "Ted Danson",
@@ -43,7 +49,7 @@ model = ConcreteModel()
 
 # Sets
 courtrooms = range(3)
-slots = range(2)
+# slots = range(2)
 attorneys = range(10)  # Assuming 10 attorneys
 
 model.DAYS = Set(initialize=range(len(working_days)))
