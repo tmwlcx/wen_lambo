@@ -137,12 +137,12 @@ namespace AttorneyScheduler.Services
         {
             var pythonSettings = _configuration.GetSection("Python").Get<PythonSettings>();
 
-            string pythonPath = pythonSettings.ExecutablePath;
+            string condaPath = pythonSettings.ExecutablePath;
             string scriptPath = pythonSettings.ScriptPath;
 
-            if (!File.Exists(pythonPath))
+            if (!File.Exists(condaPath))
             {
-                throw new InvalidOperationException($"python.exe not found at {pythonPath}");
+                throw new InvalidOperationException($"conda.exe not found at {condaPath}");
             }
 
             if (!File.Exists(scriptPath))
@@ -155,8 +155,8 @@ namespace AttorneyScheduler.Services
 
             ProcessStartInfo psi = new ProcessStartInfo
             {
-                FileName = pythonPath,
-                Arguments = $"{scriptPath} {arguments}",
+                FileName = condaPath,
+                Arguments = $"run -n opt python {scriptPath} {arguments}",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
