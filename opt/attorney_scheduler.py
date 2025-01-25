@@ -84,6 +84,14 @@ model.slot_filled = Constraint(model.COURTROOMS, model.SLOTS, model.DAYS, rule=s
 
 # 2. No attorney can be scheduled more than 3 days in a week (5 working days in a week)
 def max_days_per_week_rule(model, i, week):
+    # the below return statement is equivalent to:
+    # total = 0
+    # for j in model.COURTROOMS:
+    #     for k in model.SLOTS:
+    #         for d in range(week * 5, (week + 1) * 5):
+    #             if d in model.DAYS:
+    #                 total += model.x[i, j, k, d]
+    # return total <= 3
     return sum(model.x[i, j, k, d] for j in model.COURTROOMS for k in model.SLOTS for d in range(week * 5, (week + 1) * 5) if d in model.DAYS) <= 3
 model.max_days_per_week = Constraint(model.ATTORNEYS, range((len(working_days) + 4) // 5), rule=max_days_per_week_rule)
 
