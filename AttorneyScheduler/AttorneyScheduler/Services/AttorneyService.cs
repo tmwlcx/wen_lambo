@@ -135,14 +135,18 @@ namespace AttorneyScheduler.Services
 
         public async Task<string> GenerateSchedule(int scheduleYear, int scheduleMonth, int numSlots)
         {
+            if (scheduleMonth < 1 || scheduleMonth > 12)
+            {
+                throw new ArgumentOutOfRangeException(nameof(scheduleMonth), "The schedule month must be between 1 and 12.");
+            }
             var pythonSettings = _configuration.GetSection("Python").Get<PythonSettings>();
 
-            string pythonPath = pythonSettings.ExecutablePath;
+            string condaPath = pythonSettings.ExecutablePath;
             string scriptPath = pythonSettings.ScriptPath;
 
-            if (!File.Exists(pythonPath))
+            if (!File.Exists(condaPath))
             {
-                throw new InvalidOperationException($"python.exe not found at {pythonPath}");
+                throw new InvalidOperationException($"conda.exe not found at {condaPath}");
             }
 
             if (!File.Exists(scriptPath))
@@ -150,13 +154,27 @@ namespace AttorneyScheduler.Services
                 throw new InvalidOperationException($"Script not found at {scriptPath}");
             }
 
+            var attorneyIds = await _context.Attorney
+                .Select(x => x.AttorneyId)
+                .ToListAsync();
+
+            var jrAttorneyIds = await _context.Attorney
+                .Where(x => x.AttorneyTypeId == 3)
+                .Select(x => x.AttorneyId)
+                .ToListAsync();
+
+            string attorneyIdsString = string.Join(",", attorneyIds);
+            string jrAttorneyIdsString = string.Join(",", jrAttorneyIds);
+
+            // TODO: add courtroom
+
             // build the command-line arguments to pass to the Python script
-            string arguments = $"{scheduleYear} {scheduleMonth} {numSlots}";
+            string arguments = $"{scheduleYear} {scheduleMonth} {numSlots} {attorneyIdsString} {jrAttorneyIdsString}";
 
             ProcessStartInfo psi = new ProcessStartInfo
             {
-                FileName = pythonPath,
-                Arguments = $"{scriptPath} {arguments}",
+                FileName = condaPath,
+                Arguments = $"run -n opt python {scriptPath} {arguments}",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
