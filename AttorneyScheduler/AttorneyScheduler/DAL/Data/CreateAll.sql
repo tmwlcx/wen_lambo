@@ -30,13 +30,14 @@ CREATE TABLE AttorneyTimeOff (
 
 CREATE TABLE CourtRoom (
     CourtRoomId INTEGER PRIMARY KEY,
-    CourtRoomName TEXT UNIQUE,
+    JudgeName TEXT, # it is feasible that there could be two judges with the same name so is UNIQUE the right type?
+    CourtRoomNumber INTEGER,
     CreatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
     UpdatedDate DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 INSERT INTO CourtRoom(CourtRoomName)
-VALUES('CourtRoom 1'), ('CourtRoom 2 Judicial Boogaloo');
+VALUES('CourtRoom 1'), ('The Honorable Cunty McCuntface'), ('CourtRoom 2 Judicial Boogaloo');
 
 CREATE TABLE Schedule (
     ScheduleId INTEGER PRIMARY KEY,
