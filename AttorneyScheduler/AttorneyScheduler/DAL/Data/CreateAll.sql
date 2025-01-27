@@ -30,13 +30,13 @@ CREATE TABLE AttorneyTimeOff (
 
 CREATE TABLE CourtRoom (
     CourtRoomId INTEGER PRIMARY KEY,
-    CourtRoomName TEXT UNIQUE,
+    CourtRoomNumber TEXT,
     CreatedDate DATETIME DEFAULT CURRENT_TIMESTAMP,
     UpdatedDate DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 INSERT INTO CourtRoom(CourtRoomName)
-VALUES('CourtRoom 1'), ('CourtRoom 2 Judicial Boogaloo');
+VALUES('CourtRoom 1'),('CourtRoom 2 Judicial Boogaloo');
 
 CREATE TABLE Schedule (
     ScheduleId INTEGER PRIMARY KEY,
