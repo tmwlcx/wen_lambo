@@ -13,6 +13,8 @@ namespace AttorneyScheduler.DAL
         public DbSet<AttorneyType> AttorneyType { get; set; }
         public DbSet<AttorneyTimeOff> AttorneyTimeOff { get; set; }
 
+        public DbSet<Courtroom> Courtroom { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite("Data Source=DAL\\Data\\AttorneyScheduler.db");
@@ -56,6 +58,21 @@ namespace AttorneyScheduler.DAL
                 .WithMany(attorney => attorney.AttorneyTimeOff)
                 .HasForeignKey(a => a.AttorneyId)
                 .IsRequired();
+
+            modelBuilder.Entity<Courtroom>()
+                .HasKey(b => b.CourtRoomId);
+
+            modelBuilder.Entity<Courtroom>()
+                .HasOne(b => b.CourtRoomNumber) //not sure what the error i am getting here is for on .HasOne()
+                .IsRequired();
+
+            modelBuilder.Entity<Courtroom>()
+                .Property(b => b.CreatedDate)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            modelBuilder.Entity<Courtroom>()
+                .Property(b => b.UpdatedDate)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
         }
     }
 }
